@@ -1,0 +1,15 @@
+CHECKLIST BEFORE YOU SUBMIT TO MAKE SURE YOU ADHERE TO THE GUIDELINES: 
+
+1. Proper header: Date, Name, ALL methods and ALL functions. Double check that you have all of
+the functions and methods!!!
+2. All functions/rules that need a preceding block comment have one.
+3. All parentheses that span multiple lines have an ; at the end with the first line, ex.
+if you have deffunction f (?p) on line one, then you must have ; deffunction f (?p) after the closing
+parentheses.
+4. All functions end with a return statement at the END of the function, and no multiple return statements
+in one function, with the exception of recursive functions.
+5. Three spaces instead of tabs.
+6. No magic numbers! Define global variables or use in-line comments.
+7. UI must be clear, must not crash.
+8. In-line comments that are near each other must vertically align.
+9. WATCH OUT FOR DUPLICATION OF CODE. If you write the same code 10 times, make it into a function!
