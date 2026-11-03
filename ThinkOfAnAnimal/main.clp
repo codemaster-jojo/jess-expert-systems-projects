@@ -6,6 +6,12 @@
 ** 
 ** Required files:
 ** utilities_v5.clp
+** mammals.clp          - batched once the animal is a mammal
+** reptiles.clp         - batched once the animal is a reptile
+** amphibians.clp       - batched once the animal is an amphibian
+** birds.clp            - batched once the animal is a bird
+** fish.clp             - batched once the animal is a fish
+** invertebrates.clp    - batched once the animal is not a vertebrate
 ** 
 ** Experts (that played the Think of an Animal Game):
 ** Manan Gupta, Tanay Agrawal, Jaden Liu, Aaron Ma.
@@ -15,32 +21,8 @@
 ** Use forward chaining as filters to avoid redundant questions (i.e. "is it a mammal?" -> yes.
 ** then, it won't ask if it is a reptile.)
 ** 
-** This expert system is limited in that it is only able to guess the following animals.
-** Anything else would result in the expert system claiming they don't know which animal it is.
-** Chicken
-** Ostrich
-** Owl
-** Parrot
-** Blue Whale
-** Human
-** Kangaroo
-** Rat
-** Platypus
-** Bat
-** Snake
-** Common Lizard
-** Chameleon
-** Tortoise
-** Frog
-** Pufferfish
-** Eel
-** Earthworm
-** Spider
-** Scorpion
-** Jellyfish
-** Octopus
-** Crab
-** Starfish
+** This expert system is limited in that it is only able to guess out of a limited set of animals.
+** Anything else would return an "I don't know" or a wrong guess.
 ** 
 ** Here are all of the functions in this file:
 ** assertYNU   - asks yes, no, or unknown. asserts the trait as y or n; unknown asserts both.
@@ -64,30 +46,14 @@
 
 (do-backward-chaining vertebrate)
 (do-backward-chaining warmBlooded)
-(do-backward-chaining exoskeleton)
 (do-backward-chaining mammal)
 (do-backward-chaining reptile)
 (do-backward-chaining amphibian)
 (do-backward-chaining bird)
 (do-backward-chaining fish)
-(do-backward-chaining canInflate)
 (do-backward-chaining waterAnimal)
-(do-backward-chaining venomous)
-(do-backward-chaining tailStinger)
-(do-backward-chaining mollusk)
-(do-backward-chaining cnidarian)
-(do-backward-chaining radialSymmetry)
-(do-backward-chaining legs)
-(do-backward-chaining canChangeColors)
-(do-backward-chaining shell)
-(do-backward-chaining livesInSaltwaterOcean)
 (do-backward-chaining fly)
-(do-backward-chaining repeatHumanWords)
 (do-backward-chaining omnivore)
-(do-backward-chaining apexPredator)
-(do-backward-chaining birdOfPrey)
-(do-backward-chaining buriesUnderground)
-(do-backward-chaining standOnTwoLimbs)
 (do-backward-chaining pets)
 (do-backward-chaining activeDuringDay)
 
@@ -223,38 +189,6 @@
    (assert (waterAnimalFilter ?ans))
 )
 
-(defrule need-livesInSaltwaterOcean "Asks if animal lives in the ocean"
-   (not (guessed))
-   (need-livesInSaltwaterOcean ?)
-=>
-   (bind ?ans (assertYNU livesInSaltwaterOcean "Does the animal live in the ocean? "))
-   (assert (livesInSaltwaterOceanFilter ?ans))
-)
-
-(defrule need-standOnTwoLimbs "Asks if animal can stand on two limbs"
-   (not (guessed))
-   (need-standOnTwoLimbs ?)
-=>
-   (bind ?ans (assertYNU standOnTwoLimbs "Does the animal usually stand on two limbs? "))
-   (assert (standOnTwoLimbsFilter ?ans))
-)
-
-(defrule need-apexPredator "Asks if animal is apex predator"
-   (not (guessed))
-   (need-apexPredator ?)
-=>
-   (bind ?ans (assertYNU apexPredator "Is the animal an apex predator? "))
-   (assert (apexPredatorFilter ?ans))
-)
-
-(defrule need-buriesUnderground "Asks if animal buries underground"
-   (not (guessed))
-   (need-buriesUnderground ?)
-=>
-   (bind ?ans (assertYNU buriesUnderground "Does the animal bury underground? "))
-   (assert (buriesUndergroundFilter ?ans))
-)
-
 (defrule need-fly "Asks if animal can fly"
    (not (guessed))
    (need-fly ?)
@@ -263,108 +197,12 @@
    (assert (flyFilter ?ans))
 )
 
-(defrule need-repeatHumanWords "Asks if animal repeats human words"
-   (not (guessed))
-   (need-repeatHumanWords ?)
-=>
-   (bind ?ans (assertYNU repeatHumanWords "Can the animal repeat words that humans say? "))
-   (assert (repeatHumanWordsFilter ?ans))
-)
-
-(defrule need-legs "Asks if animal has legs"
-   (not (guessed))
-   (need-legs ?)
-=>
-   (bind ?ans (assertYNU legs "Does the animal have legs? "))
-   (assert (legsFilter ?ans))
-)
-
-(defrule need-canChangeColors "Asks if animal can change colors"
-   (not (guessed))
-   (need-canChangeColors ?)
-=>
-   (bind ?ans (assertYNU canChangeColors "Can the animal change colors? "))
-   (assert (canChangeColorsFilter ?ans))
-)
-
-(defrule need-shell "Asks if animal has shell"
-   (not (guessed))
-   (need-shell ?)
-=>
-   (bind ?ans (assertYNU shell "Does the animal have a shell? "))
-   (assert (shellFilter ?ans))
-)
-
-(defrule need-exoskeleton "Asks if animal has an exoskeleton"
-   (not (guessed))
-   (need-exoskeleton ?)
-=>
-   (bind ?ans (assertYNU exoskeleton "Does the animal have an exoskeleton? "))
-   (assert (exoskeletonFilter ?ans))
-)
-
-(defrule need-canInflate "Asks if animal can inflate"
-   (not (guessed))
-   (need-canInflate ?)
-=>
-   (bind ?ans (assertYNU canInflate "Can the animal inflate itself? "))
-   (assert (canInflateFilter ?ans))
-)
-
-(defrule need-venomous "Asks if animal is venomous"
-   (not (guessed))
-   (need-venomous ?)
-=>
-   (bind ?ans (assertYNU venomous "Is the animal venomous? "))
-   (assert (venomousFilter ?ans))
-)
-
-(defrule need-tailStinger "Asks if animal has a tail stinger"
-   (not (guessed))
-   (need-tailStinger ?)
-=>
-   (bind ?ans (assertYNU tailStinger "Does the animal have a stinger on its tail? "))
-   (assert (tailStingerFilter ?ans))
-)
-
-(defrule need-mollusk "Asks if animal is a mollusk"
-   (not (guessed))
-   (need-mollusk ?)
-=>
-   (bind ?ans (assertYNU mollusk "Is the animal a mollusk? "))
-   (assert (molluskFilter ?ans))
-)
-
-(defrule need-cnidarian "Asks if animal is a cnidarian"
-   (not (guessed))
-   (need-cnidarian ?)
-=>
-   (bind ?ans (assertYNU cnidarian "Is the animal a cnidarian? "))
-   (assert (cnidarianFilter ?ans))
-)
-
-(defrule need-radialSymmetry "Asks if animal has radial symmetry"
-   (not (guessed))
-   (need-radialSymmetry ?)
-=>
-   (bind ?ans (assertYNU radialSymmetry "Does the animal have radial symmetry? "))
-   (assert (radialSymmetryFilter ?ans))
-)
-
 (defrule need-omnivore "Asks if animal is an omnivore"
    (not (guessed))
    (need-omnivore ?)
 =>
    (bind ?ans (assertYNU omnivore "Is the animal an omnivore? "))
    (assert (omnivoreFilter ?ans))
-)
-
-(defrule need-birdOfPrey "Asks if animal is a bird of prey"
-   (not (guessed))
-   (need-birdOfPrey ?)
-=>
-   (bind ?ans (assertYNU birdOfPrey "Is the animal a bird of prey? "))
-   (assert (birdOfPreyFilter ?ans))
 )
 
 (defrule need-pets "Asks if animal is a pet"
@@ -417,299 +255,72 @@
    (assert (mammal n) (bird n))
 )
 
-(defrule mammalFilters "If mammal, then filter these facts."
-   (declare (salience ?*FILTER_SALIENCE*))
-   (mammalFilter y)
-=>
-   (assert (reptile n) (amphibian n) (bird n) (fish n))
-)
-
-(defrule reptileFilters "If reptile, then filter these facts."
-   (declare (salience ?*FILTER_SALIENCE*))
-   (reptileFilter y)
-=>
-   (assert (mammal n) (amphibian n) (bird n) (fish n))
-)
-
-(defrule amphibianFilters "If amphibian, then filter these facts."
-   (declare (salience ?*FILTER_SALIENCE*))
-   (amphibianFilter y)
-=>
-   (assert (mammal n) (reptile n) (bird n) (fish n))
-)
-
-(defrule birdFilters "If bird, then filter these facts."
-   (declare (salience ?*FILTER_SALIENCE*))
-   (birdFilter y)
-=>
-   (assert (mammal n) (reptile n) (amphibian n) (fish n))
-)
-
-(defrule fishFilters "If bird, then filter these facts."
-   (declare (salience ?*FILTER_SALIENCE*))
-   (fishFilter y)
-=>
-   (assert (mammal n) (reptile n) (amphibian n) (bird n))
-)
-
 /*
 ** =================================================
 ** Rules to guess the animal. Uses backward chaining!
 */
-(defrule isBlueWhale "mammal, lives in water, lives in ocean"
+(defrule isMammal "batches the mammal knowledge island"
    (not (guessed))
+   (not (mammals-loaded))
    (vertebrate y)
    (warmBlooded y)
    (mammal y)
-   (waterAnimal y)
-   (livesInSaltwaterOcean y) ; not platypus
 =>
-   (guess "blue whale")
+   (assert (mammals-loaded))
+   (batch mammals.clp)
 )
 
-(defrule isHuman "mammal, stands on 2 limbs, apex predator"
+(defrule isReptile "batches the reptile knowledge island"
    (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (mammal y)
-   (standOnTwoLimbs y)
-   (apexPredator y) ; not kangaroo
-=>
-   (guess "human")
-)
-
-(defrule isKangaroo "mammal, stands on 2 limbs, not apex predator"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (mammal y)
-   (standOnTwoLimbs y)
-   (apexPredator n) ; not human
-=>
-   (guess "kangaroo")
-)
-
-(defrule isRat "mammal, buries underground"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (mammal y)
-   (waterAnimal n)
-   (buriesUnderground y)
-=>
-   (guess "rat")
-)
-
-(defrule isPlatypus "mammal, lives in water, doesn't live in saltwater"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (mammal y)
-   (waterAnimal y)
-   (livesInSaltwaterOcean n) ; not whale
-=>
-   (guess "platypus")
-)
-
-(defrule isBat "mammal, can fly"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (mammal y)
-   (waterAnimal n)
-   (fly y)
-=>
-   (guess "bat")
-)
-
-(defrule isSnake "reptile, no legs"
-   (not (guessed))
+   (not (reptiles-loaded))
    (vertebrate y)
    (warmBlooded n)
    (reptile y)
-   (legs n) ; not common lizard
 =>
-   (guess "snake")
+   (assert (reptiles-loaded))
+   (batch reptiles.clp)
 )
 
-(defrule isLizard "reptile, legs, cannot change color"
+(defrule isAmphibian "batches the amphibian knowledge island"
    (not (guessed))
+   (not (amphibians-loaded))
    (vertebrate y)
    (warmBlooded n)
-   (reptile y)
-   (legs y)             ; not snake
-   (canChangeColors n)  ; not chameleon
-   (shell n)            ; not tortoise
+   (amphibian y)
 =>
-   (guess "common lizard")
+   (assert (amphibians-loaded))
+   (batch amphibians.clp)
 )
 
-(defrule isChameleon "reptile, legs, can change color"
+(defrule isBird "batches the bird knowledge island"
    (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (reptile y)
-   (legs y)             
-   (canChangeColors y)
-=>
-   (guess "chameleon")
-)
-
-(defrule isTortoise "reptile, legs, shell"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (reptile y)
-   (legs y)             
-   (shell y)
-=>
-   (guess "tortoise")
-)
-
-(defrule isChicken "bird, flies, not bird of prey"
-   (not (guessed))
+   (not (birds-loaded))
    (vertebrate y)
    (warmBlooded y)
    (bird y)
-   (birdOfPrey n)
-   (fly y)
-   (repeatHumanWords n) ; not parrot
 =>
-   (guess "chicken")
+   (assert (birds-loaded))
+   (batch birds.clp)
 )
 
-(defrule isParrot "bird, flies, not bird of prey"
+(defrule isFish "batches the fish knowledge island"
    (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
-   (birdOfPrey n)
-   (fly y)
-   (repeatHumanWords y) ; not chicken
-=>
-   (guess "parrot")
-)
-
-
-(defrule isOstrich "bird, doesn't fly, not bird of prey"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
-   (birdOfPrey n)
-   (fly n)
-=>
-   (guess "ostrich")
-)
-
-(defrule isOwl "bird, bird of prey"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
-   (birdOfPrey y)
-=>
-   (guess "owl")
-)
-
-(defrule isFrog "amphibian"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (amphibian y)  ; frog is the only amphibian
-=>
-   (guess "frog")
-)
-
-(defrule isPufferfish "fish, can inflate"
-   (not (guessed))
+   (not (fish-loaded))
    (vertebrate y)
    (warmBlooded n)
    (fish y)
-   (canInflate y) ; not eel
-=> 
-   (guess "pufferfish")
-)
-
-(defrule isEel "fish, canot in flate"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (fish y)
-   (canInflate n) ; not pufferfish
-=> 
-   (guess "eel")
-)
-
-(defrule isEarthworm "not vertebrate, no exoskeleton, not water animal"
-   (not (guessed))
-   (vertebrate n)
-   (exoskeleton n)
-   (waterAnimal n)
 =>
-   (guess "earthworm")
+   (assert (fish-loaded))
+   (batch fish.clp)
 )
 
-
-(defrule isSpider "not vertebrate, exoskeleton, not water animal, venomous, doesn't deliver venom through tail stinger"
+(defrule isInvertebrate "batches the invertebrate knowledge island"
    (not (guessed))
+   (not (invertebrates-loaded))
    (vertebrate n)
-   (exoskeleton y)
-   (waterAnimal n)
-   (venomous y)
-   (tailStinger n) ; not scorpion
 =>
-   (guess "spider")
-)
-
-(defrule isScorpion "not vertebrate, exoskeleton, not water animal, venomous, delivers venom through tail stinger"
-   (not (guessed))
-   (vertebrate n)
-   (exoskeleton y)
-   (waterAnimal n)
-   (venomous y)
-   (tailStinger y) ; not spider
-=>
-   (guess "scorpion")
-)
-
-(defrule isJellyfish "not vertebrate, no exoskeleton, water animal, cnidarian"
-   (not (guessed))
-   (vertebrate n)
-   (exoskeleton n)
-   (waterAnimal y)
-   (cnidarian y)
-=>
-   (guess "jellyfish")
-)
-
-(defrule isOctopus "not vertebrate, no exoskeleton, water animal, mollusk"
-   (not (guessed))
-   (vertebrate n)
-   (exoskeleton n)
-   (waterAnimal y)
-   (mollusk y)
-=>
-   (guess "octopus")
-)
-
-(defrule isCrab "not vertebrate, exoskeleton, water animal"
-   (not (guessed))
-   (vertebrate n)
-   (exoskeleton y)
-   (waterAnimal y)
-=>
-   (guess "crab")
-)
-
-(defrule isStarfish "not vertebate, no exoskeleton, water animal, radially symmetric"
-   (not (guessed))
-   (vertebrate n)
-   (exoskeleton n)
-   (waterAnimal y)
-   (radialSymmetry y)
-=>
-   (guess "starfish")
+   (assert (invertebrates-loaded))
+   (batch invertebrates.clp)
 )
 
 /*
