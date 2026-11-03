@@ -43,7 +43,7 @@
 ** Starfish
 ** 
 ** Here are all of the functions in this file:
-** askYNU      - asks yes, no, or unknown question. returns y, n, or u.
+** assertYNU   - asks yes, no, or unknown. asserts the trait as y or n; unknown asserts both.
 ** guess       - guesses an animal. this is the terminating 
 */
 
@@ -98,33 +98,39 @@
 */
 
 /*
-** This function asks a question and then return y, n, or u depending on if its yes, no, or unknown
-** or if its y, n, or u. (for standardization for the rest of the file.)
-** It will keep asking the same question until the user inputs something valid (a token that starts
-** with y, n, or u).
+** Asks a question and asserts the answer as a token on ?trait.
+** y asserts (trait y). n asserts (trait n). u asserts both (trait y) and (trait n).
+** Returns y, n, or u. Keeps asking until the input starts with one of those letters.
 */
-(deffunction askYNU (?question)
+(deffunction assertYNU (?trait ?question)
    (bind ?answer "")
 
    (if (>= ?*num_guesses* ?*MAX_GUESSES*) then
       (print "I have asked " ?*MAX_GUESSES* " questions and still do not know the animal. You win!" crlf)
       (assert (guessed))
-      (bind ?answer "u")
+      (bind ?answer u)
    else
       (bind ?*num_guesses* (+ 1 ?*num_guesses*))
 
-      (while (not (member$ ?answer (create$ "y" "n" "u")))         ; keep asking until they give a valid answer
+      (while (not (member$ ?answer (create$ y n u)))         ; keep asking until they give a valid answer
          (print "Q" ?*num_guesses* ". ")
-         (bind ?answer (sub-string 1 1 (lowcase (ask ?question)))) ; gets the first character of the result
+         (bind ?answer (sym-cat (sub-string 1 1 (lowcase (ask ?question))))) ; first character, as a token
 
-         (if (not (member$ ?answer (create$ "y" "n" "u"))) then
+         (if (not (member$ ?answer (create$ y n u))) then
             (printout t "Please enter a word that starts with y (yes), n (no), or u (unknown)." crlf)
          )
-      ) ; while (not (member$ ?answer (create$ "y" "n" "u")))
-   )
+      ) ; while (not (member$ ?answer (create$ y n u)))
+
+      (if (eq ?answer u) then
+         (assert-string (str-cat "(" ?trait " y)"))
+         (assert-string (str-cat "(" ?trait " n)"))
+      else
+         (assert-string (str-cat "(" ?trait " " ?answer ")"))
+      )
+   ) ; if (>= ?*num_guesses* ?*MAX_GUESSES*) then
 
    (return ?answer)
-) ; deffunction askYesNo (?question)
+) ; deffunction assertYNU (?trait ?question)
 
 /*
 ** Guesses the animal. This marks the end of the Think of an Animal game, right before the closing remarks
@@ -133,8 +139,8 @@
    (assert (guessed))
 
    (print "I am ready to guess! Here is my guess: " ?animal "." crlf)
-   (bind ?ans (sub-string 1 1 (lowcase (ask "Am I correct (y/n)? ")))) ; gets the first character in lowercase
-   (if (= ?ans "y") then
+   (bind ?ans (sym-cat (sub-string 1 1 (lowcase (ask "Am I correct (y/n)? "))))) ; first character, as a token
+   (if (eq ?ans y) then
       (print "Nice! I win!" crlf)
    else
       (print "Aw, I'll get it next time... You won!" crlf)
@@ -157,8 +163,7 @@
    (not (guessed))
    (need-vertebrate ?)
 =>
-   (bind ?ans (askYNU "Is the animal a vertebrate? "))
-   (assert (vertebrate ?ans))
+   (bind ?ans (assertYNU vertebrate "Is the animal a vertebrate? "))
    (assert (vertebrateFilter ?ans))
 )
 
@@ -166,8 +171,7 @@
    (not (guessed))
    (need-warmBlooded ?)
 =>
-   (bind ?ans (askYNU "Is the animal warm blooded? "))
-   (assert (warmBlooded ?ans))
+   (bind ?ans (assertYNU warmBlooded "Is the animal warm blooded? "))
    (assert (warmBloodedFilter ?ans))
 )
 
@@ -175,8 +179,7 @@
    (not (guessed))
    (need-mammal ?)
 =>
-   (bind ?ans (askYNU "Is the animal a mammal? "))
-   (assert (mammal ?ans))
+   (bind ?ans (assertYNU mammal "Is the animal a mammal? "))
    (assert (mammalFilter ?ans))
 )
 
@@ -184,8 +187,7 @@
    (not (guessed))
    (need-reptile ?)
 =>
-   (bind ?ans (askYNU "Is the animal a reptile? "))
-   (assert (reptile ?ans))
+   (bind ?ans (assertYNU reptile "Is the animal a reptile? "))
    (assert (reptileFilter ?ans))
 )
 
@@ -193,8 +195,7 @@
    (not (guessed))
    (need-amphibian ?)
 =>
-   (bind ?ans (askYNU "Is the animal an amphibian? "))
-   (assert (amphibian ?ans))
+   (bind ?ans (assertYNU amphibian "Is the animal an amphibian? "))
    (assert (amphibianFilter ?ans))
 )
 
@@ -202,8 +203,7 @@
    (not (guessed))
    (need-bird ?)
 =>
-   (bind ?ans (askYNU "Is the animal a bird? "))
-   (assert (bird ?ans))
+   (bind ?ans (assertYNU bird "Is the animal a bird? "))
    (assert (birdFilter ?ans))
 )
 
@@ -211,8 +211,7 @@
    (not (guessed))
    (need-fish ?)
 =>
-   (bind ?ans (askYNU "Is the animal a fish? "))
-   (assert (fish ?ans))
+   (bind ?ans (assertYNU fish "Is the animal a fish? "))
    (assert (fishFilter ?ans))
 )
 
@@ -220,8 +219,7 @@
    (not (guessed))
    (need-waterAnimal ?)
 =>
-   (bind ?ans (askYNU "Does the animal live in water? "))
-   (assert (waterAnimal ?ans))
+   (bind ?ans (assertYNU waterAnimal "Does the animal live in water? "))
    (assert (waterAnimalFilter ?ans))
 )
 
@@ -229,8 +227,7 @@
    (not (guessed))
    (need-livesInSaltwaterOcean ?)
 =>
-   (bind ?ans (askYNU "Does the animal live in the ocean? "))
-   (assert (livesInSaltwaterOcean ?ans))
+   (bind ?ans (assertYNU livesInSaltwaterOcean "Does the animal live in the ocean? "))
    (assert (livesInSaltwaterOceanFilter ?ans))
 )
 
@@ -238,8 +235,7 @@
    (not (guessed))
    (need-standOnTwoLimbs ?)
 =>
-   (bind ?ans (askYNU "Does the animal usually stand on two limbs? "))
-   (assert (standOnTwoLimbs ?ans))
+   (bind ?ans (assertYNU standOnTwoLimbs "Does the animal usually stand on two limbs? "))
    (assert (standOnTwoLimbsFilter ?ans))
 )
 
@@ -247,8 +243,7 @@
    (not (guessed))
    (need-apexPredator ?)
 =>
-   (bind ?ans (askYNU "Is the animal an apex predator? "))
-   (assert (apexPredator ?ans))
+   (bind ?ans (assertYNU apexPredator "Is the animal an apex predator? "))
    (assert (apexPredatorFilter ?ans))
 )
 
@@ -256,8 +251,7 @@
    (not (guessed))
    (need-buriesUnderground ?)
 =>
-   (bind ?ans (askYNU "Does the animal bury underground? "))
-   (assert (buriesUnderground ?ans))
+   (bind ?ans (assertYNU buriesUnderground "Does the animal bury underground? "))
    (assert (buriesUndergroundFilter ?ans))
 )
 
@@ -265,8 +259,7 @@
    (not (guessed))
    (need-fly ?)
 =>
-   (bind ?ans (askYNU "Can the animal fly (not glide), even for short distances? "))
-   (assert (fly ?ans))
+   (bind ?ans (assertYNU fly "Can the animal fly (not glide), even for short distances? "))
    (assert (flyFilter ?ans))
 )
 
@@ -274,8 +267,7 @@
    (not (guessed))
    (need-repeatHumanWords ?)
 =>
-   (bind ?ans (askYNU "Can the animal repeat words that humans say? "))
-   (assert (repeatHumanWords ?ans))
+   (bind ?ans (assertYNU repeatHumanWords "Can the animal repeat words that humans say? "))
    (assert (repeatHumanWordsFilter ?ans))
 )
 
@@ -283,8 +275,7 @@
    (not (guessed))
    (need-legs ?)
 =>
-   (bind ?ans (askYNU "Does the animal have legs? "))
-   (assert (legs ?ans))
+   (bind ?ans (assertYNU legs "Does the animal have legs? "))
    (assert (legsFilter ?ans))
 )
 
@@ -292,8 +283,7 @@
    (not (guessed))
    (need-canChangeColors ?)
 =>
-   (bind ?ans (askYNU "Can the animal change colors? "))
-   (assert (canChangeColors ?ans))
+   (bind ?ans (assertYNU canChangeColors "Can the animal change colors? "))
    (assert (canChangeColorsFilter ?ans))
 )
 
@@ -301,8 +291,7 @@
    (not (guessed))
    (need-shell ?)
 =>
-   (bind ?ans (askYNU "Does the animal have a shell? "))
-   (assert (shell ?ans))
+   (bind ?ans (assertYNU shell "Does the animal have a shell? "))
    (assert (shellFilter ?ans))
 )
 
@@ -310,8 +299,7 @@
    (not (guessed))
    (need-exoskeleton ?)
 =>
-   (bind ?ans (askYNU "Does the animal have an exoskeleton? "))
-   (assert (exoskeleton ?ans))
+   (bind ?ans (assertYNU exoskeleton "Does the animal have an exoskeleton? "))
    (assert (exoskeletonFilter ?ans))
 )
 
@@ -319,8 +307,7 @@
    (not (guessed))
    (need-canInflate ?)
 =>
-   (bind ?ans (askYNU "Can the animal inflate itself? "))
-   (assert (canInflate ?ans))
+   (bind ?ans (assertYNU canInflate "Can the animal inflate itself? "))
    (assert (canInflateFilter ?ans))
 )
 
@@ -328,8 +315,7 @@
    (not (guessed))
    (need-venomous ?)
 =>
-   (bind ?ans (askYNU "Is the animal venomous? "))
-   (assert (venomous ?ans))
+   (bind ?ans (assertYNU venomous "Is the animal venomous? "))
    (assert (venomousFilter ?ans))
 )
 
@@ -337,8 +323,7 @@
    (not (guessed))
    (need-tailStinger ?)
 =>
-   (bind ?ans (askYNU "Does the animal have a stinger on its tail? "))
-   (assert (tailStinger ?ans))
+   (bind ?ans (assertYNU tailStinger "Does the animal have a stinger on its tail? "))
    (assert (tailStingerFilter ?ans))
 )
 
@@ -346,8 +331,7 @@
    (not (guessed))
    (need-mollusk ?)
 =>
-   (bind ?ans (askYNU "Is the animal a mollusk? "))
-   (assert (mollusk ?ans))
+   (bind ?ans (assertYNU mollusk "Is the animal a mollusk? "))
    (assert (molluskFilter ?ans))
 )
 
@@ -355,8 +339,7 @@
    (not (guessed))
    (need-cnidarian ?)
 =>
-   (bind ?ans (askYNU "Is the animal a cnidarian? "))
-   (assert (cnidarian ?ans))
+   (bind ?ans (assertYNU cnidarian "Is the animal a cnidarian? "))
    (assert (cnidarianFilter ?ans))
 )
 
@@ -364,8 +347,7 @@
    (not (guessed))
    (need-radialSymmetry ?)
 =>
-   (bind ?ans (askYNU "Does the animal have radial symmetry? "))
-   (assert (radialSymmetry ?ans))
+   (bind ?ans (assertYNU radialSymmetry "Does the animal have radial symmetry? "))
    (assert (radialSymmetryFilter ?ans))
 )
 
@@ -373,8 +355,7 @@
    (not (guessed))
    (need-omnivore ?)
 =>
-   (bind ?ans (askYNU "Is the animal an omnivore? "))
-   (assert (omnivore ?ans))
+   (bind ?ans (assertYNU omnivore "Is the animal an omnivore? "))
    (assert (omnivoreFilter ?ans))
 )
 
@@ -382,8 +363,7 @@
    (not (guessed))
    (need-birdOfPrey ?)
 =>
-   (bind ?ans (askYNU "Is the animal a bird of prey? "))
-   (assert (birdOfPrey ?ans))
+   (bind ?ans (assertYNU birdOfPrey "Is the animal a bird of prey? "))
    (assert (birdOfPreyFilter ?ans))
 )
 
@@ -391,8 +371,7 @@
    (not (guessed))
    (need-pets ?)
 =>
-   (bind ?ans (askYNU "Is the animal commonly kept as a pet? "))
-   (assert (pets ?ans))
+   (bind ?ans (assertYNU pets "Is the animal commonly kept as a pet? "))
    (assert (petsFilter ?ans))
 )
 
@@ -400,8 +379,7 @@
    (not (guessed))
    (need-activeDuringDay ?)
 =>
-   (bind ?ans (askYNU "Is the animal active during the day? "))
-   (assert (activeDuringDay ?ans))
+   (bind ?ans (assertYNU activeDuringDay "Is the animal active during the day? "))
    (assert (activeDuringDayFilter ?ans))
 )
 
@@ -413,65 +391,65 @@
 
 (defrule vertebrateFilters "If vertebrate, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (vertebrateFilter "y")
+   (vertebrateFilter y)
 =>
-   (assert (exoskeleton "n") (mollusk "n") (cnidarian "n"))
+   (assert (exoskeleton n) (mollusk n) (cnidarian n))
 )
 
 (defrule notVertebrateFilters "If not vertebrate, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (vertebrateFilter "n")
+   (vertebrateFilter n)
 =>
-   (assert (mammal "n") (reptile "n") (fish "n") (bird "n") (amphibian "n"))
+   (assert (mammal n) (reptile n) (fish n) (bird n) (amphibian n))
 )
 
 (defrule warmBloodedFilter "If warm blooded, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (warmBloodedFilter "y")
+   (warmBloodedFilter y)
 =>
-   (assert (reptile "n") (fish "n") (amphibian "n"))
+   (assert (reptile n) (fish n) (amphibian n))
 )
 
 (defrule notWarmBloodedFilter "If not warm blooded, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (warmBloodedFilter "n")
+   (warmBloodedFilter n)
 =>
-   (assert (mammal "n") (bird "n"))
+   (assert (mammal n) (bird n))
 )
 
 (defrule mammalFilters "If mammal, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (mammalFilter "y")
+   (mammalFilter y)
 =>
-   (assert (reptile "n") (amphibian "n") (bird "n") (fish "n"))
+   (assert (reptile n) (amphibian n) (bird n) (fish n))
 )
 
 (defrule reptileFilters "If reptile, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (reptileFilter "y")
+   (reptileFilter y)
 =>
-   (assert (mammal "n") (amphibian "n") (bird "n") (fish "n"))
+   (assert (mammal n) (amphibian n) (bird n) (fish n))
 )
 
 (defrule amphibianFilters "If amphibian, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (amphibianFilter "y")
+   (amphibianFilter y)
 =>
-   (assert (mammal "n") (reptile "n") (bird "n") (fish "n"))
+   (assert (mammal n) (reptile n) (bird n) (fish n))
 )
 
 (defrule birdFilters "If bird, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (birdFilter "y")
+   (birdFilter y)
 =>
-   (assert (mammal "n") (reptile "n") (amphibian "n") (fish "n"))
+   (assert (mammal n) (reptile n) (amphibian n) (fish n))
 )
 
 (defrule fishFilters "If bird, then filter these facts."
    (declare (salience ?*FILTER_SALIENCE*))
-   (fishFilter "y")
+   (fishFilter y)
 =>
-   (assert (mammal "n") (reptile "n") (amphibian "n") (bird "n"))
+   (assert (mammal n) (reptile n) (amphibian n) (bird n))
 )
 
 /*
@@ -480,134 +458,134 @@
 */
 (defrule isBlueWhale "mammal, lives in water, lives in ocean"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (mammal "y")
-   (waterAnimal "y")
-   (livesInSaltwaterOcean "y") ; not platypus
+   (vertebrate y)
+   (warmBlooded y)
+   (mammal y)
+   (waterAnimal y)
+   (livesInSaltwaterOcean y) ; not platypus
 =>
    (guess "blue whale")
 )
 
 (defrule isHuman "mammal, stands on 2 limbs, apex predator"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (mammal "y")
-   (standOnTwoLimbs "y")
-   (apexPredator "y") ; not kangaroo
+   (vertebrate y)
+   (warmBlooded y)
+   (mammal y)
+   (standOnTwoLimbs y)
+   (apexPredator y) ; not kangaroo
 =>
    (guess "human")
 )
 
 (defrule isKangaroo "mammal, stands on 2 limbs, not apex predator"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (mammal "y")
-   (standOnTwoLimbs "y")
-   (apexPredator "n") ; not human
+   (vertebrate y)
+   (warmBlooded y)
+   (mammal y)
+   (standOnTwoLimbs y)
+   (apexPredator n) ; not human
 =>
    (guess "kangaroo")
 )
 
 (defrule isRat "mammal, buries underground"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (mammal "y")
-   (waterAnimal "n")
-   (buriesUnderground "y")
+   (vertebrate y)
+   (warmBlooded y)
+   (mammal y)
+   (waterAnimal n)
+   (buriesUnderground y)
 =>
    (guess "rat")
 )
 
 (defrule isPlatypus "mammal, lives in water, doesn't live in saltwater"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (mammal "y")
-   (waterAnimal "y")
-   (livesInSaltwaterOcean "n") ; not whale
+   (vertebrate y)
+   (warmBlooded y)
+   (mammal y)
+   (waterAnimal y)
+   (livesInSaltwaterOcean n) ; not whale
 =>
    (guess "platypus")
 )
 
 (defrule isBat "mammal, can fly"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (mammal "y")
-   (waterAnimal "n")
-   (fly "y")
+   (vertebrate y)
+   (warmBlooded y)
+   (mammal y)
+   (waterAnimal n)
+   (fly y)
 =>
    (guess "bat")
 )
 
 (defrule isSnake "reptile, no legs"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (reptile "y")
-   (legs "n") ; not common lizard
+   (vertebrate y)
+   (warmBlooded n)
+   (reptile y)
+   (legs n) ; not common lizard
 =>
    (guess "snake")
 )
 
 (defrule isLizard "reptile, legs, cannot change color"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (reptile "y")
-   (legs "y")             ; not snake
-   (canChangeColors "n")  ; not chameleon
-   (shell "n")            ; not tortoise
+   (vertebrate y)
+   (warmBlooded n)
+   (reptile y)
+   (legs y)             ; not snake
+   (canChangeColors n)  ; not chameleon
+   (shell n)            ; not tortoise
 =>
    (guess "common lizard")
 )
 
 (defrule isChameleon "reptile, legs, can change color"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (reptile "y")
-   (legs "y")             
-   (canChangeColors "y")
+   (vertebrate y)
+   (warmBlooded n)
+   (reptile y)
+   (legs y)             
+   (canChangeColors y)
 =>
    (guess "chameleon")
 )
 
 (defrule isTortoise "reptile, legs, shell"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (reptile "y")
-   (legs "y")             
-   (shell "y")
+   (vertebrate y)
+   (warmBlooded n)
+   (reptile y)
+   (legs y)             
+   (shell y)
 =>
    (guess "tortoise")
 )
 
 (defrule isChicken "bird, flies, not bird of prey"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (bird "y")
-   (birdOfPrey "n")
-   (fly "y")
-   (repeatHumanWords "n") ; not parrot
+   (vertebrate y)
+   (warmBlooded y)
+   (bird y)
+   (birdOfPrey n)
+   (fly y)
+   (repeatHumanWords n) ; not parrot
 =>
    (guess "chicken")
 )
 
 (defrule isParrot "bird, flies, not bird of prey"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (bird "y")
-   (birdOfPrey "n")
-   (fly "y")
-   (repeatHumanWords "y") ; not chicken
+   (vertebrate y)
+   (warmBlooded y)
+   (bird y)
+   (birdOfPrey n)
+   (fly y)
+   (repeatHumanWords y) ; not chicken
 =>
    (guess "parrot")
 )
@@ -615,59 +593,59 @@
 
 (defrule isOstrich "bird, doesn't fly, not bird of prey"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (bird "y")
-   (birdOfPrey "n")
-   (fly "n")
+   (vertebrate y)
+   (warmBlooded y)
+   (bird y)
+   (birdOfPrey n)
+   (fly n)
 =>
    (guess "ostrich")
 )
 
 (defrule isOwl "bird, bird of prey"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "y")
-   (bird "y")
-   (birdOfPrey "y")
+   (vertebrate y)
+   (warmBlooded y)
+   (bird y)
+   (birdOfPrey y)
 =>
    (guess "owl")
 )
 
 (defrule isFrog "amphibian"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (amphibian "y")  ; frog is the only amphibian
+   (vertebrate y)
+   (warmBlooded n)
+   (amphibian y)  ; frog is the only amphibian
 =>
    (guess "frog")
 )
 
 (defrule isPufferfish "fish, can inflate"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (fish "y")
-   (canInflate "y") ; not eel
+   (vertebrate y)
+   (warmBlooded n)
+   (fish y)
+   (canInflate y) ; not eel
 => 
    (guess "pufferfish")
 )
 
 (defrule isEel "fish, canot in flate"
    (not (guessed))
-   (vertebrate "y")
-   (warmBlooded "n")
-   (fish "y")
-   (canInflate "n") ; not pufferfish
+   (vertebrate y)
+   (warmBlooded n)
+   (fish y)
+   (canInflate n) ; not pufferfish
 => 
    (guess "eel")
 )
 
 (defrule isEarthworm "not vertebrate, no exoskeleton, not water animal"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "n")
-   (waterAnimal "n")
+   (vertebrate n)
+   (exoskeleton n)
+   (waterAnimal n)
 =>
    (guess "earthworm")
 )
@@ -675,61 +653,61 @@
 
 (defrule isSpider "not vertebrate, exoskeleton, not water animal, venomous, doesn't deliver venom through tail stinger"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "y")
-   (waterAnimal "n")
-   (venomous "y")
-   (tailStinger "n") ; not scorpion
+   (vertebrate n)
+   (exoskeleton y)
+   (waterAnimal n)
+   (venomous y)
+   (tailStinger n) ; not scorpion
 =>
    (guess "spider")
 )
 
 (defrule isScorpion "not vertebrate, exoskeleton, not water animal, venomous, delivers venom through tail stinger"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "y")
-   (waterAnimal "n")
-   (venomous "y")
-   (tailStinger "y") ; not spider
+   (vertebrate n)
+   (exoskeleton y)
+   (waterAnimal n)
+   (venomous y)
+   (tailStinger y) ; not spider
 =>
    (guess "scorpion")
 )
 
 (defrule isJellyfish "not vertebrate, no exoskeleton, water animal, cnidarian"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "n")
-   (waterAnimal "y")
-   (cnidarian "y")
+   (vertebrate n)
+   (exoskeleton n)
+   (waterAnimal y)
+   (cnidarian y)
 =>
    (guess "jellyfish")
 )
 
 (defrule isOctopus "not vertebrate, no exoskeleton, water animal, mollusk"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "n")
-   (waterAnimal "y")
-   (mollusk "y")
+   (vertebrate n)
+   (exoskeleton n)
+   (waterAnimal y)
+   (mollusk y)
 =>
    (guess "octopus")
 )
 
 (defrule isCrab "not vertebrate, exoskeleton, water animal"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "y")
-   (waterAnimal "y")
+   (vertebrate n)
+   (exoskeleton y)
+   (waterAnimal y)
 =>
    (guess "crab")
 )
 
 (defrule isStarfish "not vertebate, no exoskeleton, water animal, radially symmetric"
    (not (guessed))
-   (vertebrate "n")
-   (exoskeleton "n")
-   (waterAnimal "y")
-   (radialSymmetry "y")
+   (vertebrate n)
+   (exoskeleton n)
+   (waterAnimal y)
+   (radialSymmetry y)
 =>
    (guess "starfish")
 )
