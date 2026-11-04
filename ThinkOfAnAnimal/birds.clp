@@ -2,7 +2,11 @@
 ** Jonny Tang
 ** November 3, 2026
 ** 
-** Knowledge island for birds. Batched from main.clp once the animal is a bird.
+** Knowledge island for birds. Batched from main.clp once the animal is known to be a bird.
+** These facts are always asserted when this file is batched in:
+** (vertebrate y)
+** (warmBlooded y)
+** (bird y)
 ** 
 ** Experts (that played the Think of an Animal Game):
 ** Manan Gupta, Tanay Agrawal, Jaden Liu, Aaron Ma.
@@ -15,7 +19,6 @@
 ** Backward chained need- rules. Self-explanatory.
 */
 (defrule need-repeatHumanWords "Asks if animal repeats human words"
-   (not (guessed))
    (need-repeatHumanWords ?)
 =>
    (bind ?ans (assertYNU repeatHumanWords "Can the animal repeat words that humans say? "))
@@ -23,7 +26,6 @@
 )
 
 (defrule need-birdOfPrey "Asks if animal is a bird of prey"
-   (not (guessed))
    (need-birdOfPrey ?)
 =>
    (bind ?ans (assertYNU birdOfPrey "Is the animal a bird of prey? "))
@@ -45,10 +47,6 @@
 ** the said animal.
 */
 (defrule isChicken "bird, flies, not bird of prey"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
    (birdOfPrey n)
    (fly y)
    (repeatHumanWords n) ; not parrot
@@ -57,10 +55,6 @@
 )
 
 (defrule isParrot "bird, flies, not bird of prey"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
    (birdOfPrey n)
    (fly y)
    (repeatHumanWords y) ; not chicken
@@ -69,10 +63,6 @@
 )
 
 (defrule isOstrich "bird, doesn't fly, not bird of prey"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
    (birdOfPrey n)
    (fly n)
 =>
@@ -80,10 +70,6 @@
 )
 
 (defrule isOwl "bird, bird of prey"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded y)
-   (bird y)
    (birdOfPrey y)
 =>
    (guess "owl")

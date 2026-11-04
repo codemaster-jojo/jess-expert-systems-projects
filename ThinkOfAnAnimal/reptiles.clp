@@ -11,12 +11,12 @@
 (do-backward-chaining legs)
 (do-backward-chaining canChangeColors)
 (do-backward-chaining shell)
+(do-backward-chaining livesInSaltwaterOcean)
 
 /*
 ** Backward-chaining need- rules. Self explanatory.
 */
 (defrule need-legs "Asks if animal has legs"
-   (not (guessed))
    (need-legs ?)
 =>
    (bind ?ans (assertYNU legs "Does the animal have legs? "))
@@ -24,7 +24,6 @@
 )
 
 (defrule need-canChangeColors "Asks if animal can change colors"
-   (not (guessed))
    (need-canChangeColors ?)
 =>
    (bind ?ans (assertYNU canChangeColors "Can the animal change colors? "))
@@ -32,11 +31,17 @@
 )
 
 (defrule need-shell "Asks if animal has shell"
-   (not (guessed))
    (need-shell ?)
 =>
    (bind ?ans (assertYNU shell "Does the animal have a shell? "))
    (assert (shellFilter ?ans))
+)
+
+(defrule need-livesInSaltwaterOcean "Ask if animal lives in saltwater"
+   (need-livesInSaltwaterOcean ?)
+=>
+   (bind ?ans (assertYNU livesInSaltwaterOcean "Does the animal live in the ocean? "))
+   (assert (livesInSaltwaterOceanFilter ?ans))
 )
 
 /*
@@ -54,20 +59,13 @@
 ** the said animal.
 */
 (defrule isSnake "reptile, no legs"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (reptile y)
    (legs n) ; not common lizard
 =>
    (guess "snake")
 )
 
 (defrule isLizard "reptile, legs, cannot change color"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (reptile y)
+   (waterAnimal n)      ; not sea turtle or alligator
    (legs y)             ; not snake
    (canChangeColors n)  ; not chameleon
    (shell n)            ; not tortoise
@@ -76,10 +74,7 @@
 )
 
 (defrule isChameleon "reptile, legs, can change color"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (reptile y)
+   (waterAnimal n)
    (legs y)
    (canChangeColors y)
 =>
@@ -87,12 +82,23 @@
 )
 
 (defrule isTortoise "reptile, legs, shell"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (reptile y)
+   (waterAnimal n)
    (legs y)
    (shell y)
 =>
    (guess "tortoise")
+)
+
+(defrule isSeaTurtle "reptile, water, saltwater"
+   (waterAnimal y)
+   (livesInSaltwaterOcean y)
+=>
+   (guess "sea turtle")
+)
+
+(defrule isAlligator "reptile, freshwater"
+   (waterAnimal y)
+   (livesInSaltwaterOcean n)
+=>
+   (guess "alligator")
 )

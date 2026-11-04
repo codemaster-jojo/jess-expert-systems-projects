@@ -3,6 +3,8 @@
 ** November 3, 2026
 ** 
 ** Knowledge island for invertebrates. Batched from main.clp once the animal is not a vertebrate.
+** These facts are always asserted when this file is batched:
+** (vertebrate n)
 ** 
 ** Experts (that played the Think of an Animal Game):
 ** Manan Gupta, Tanay Agrawal, Jaden Liu, Aaron Ma.
@@ -72,7 +74,6 @@
 */
 (defrule isEarthworm "not vertebrate, no exoskeleton, not water animal"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton n)
    (waterAnimal n)
 =>
@@ -81,7 +82,6 @@
 
 (defrule isSpider "not vertebrate, exoskeleton, not water animal, venomous, doesn't deliver venom through tail stinger"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton y)
    (waterAnimal n)
    (venomous y)
@@ -92,7 +92,6 @@
 
 (defrule isScorpion "not vertebrate, exoskeleton, not water animal, venomous, delivers venom through tail stinger"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton y)
    (waterAnimal n)
    (venomous y)
@@ -103,7 +102,6 @@
 
 (defrule isJellyfish "not vertebrate, no exoskeleton, water animal, cnidarian"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton n)
    (waterAnimal y)
    (cnidarian y)
@@ -113,7 +111,6 @@
 
 (defrule isOctopus "not vertebrate, no exoskeleton, water animal, mollusk"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton n)
    (waterAnimal y)
    (mollusk y)
@@ -123,7 +120,6 @@
 
 (defrule isCrab "not vertebrate, exoskeleton, water animal"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton y)
    (waterAnimal y)
 =>
@@ -132,7 +128,6 @@
 
 (defrule isStarfish "not vertebate, no exoskeleton, water animal, radially symmetric"
    (not (guessed))
-   (vertebrate n)
    (exoskeleton n)
    (waterAnimal y)
    (radialSymmetry y)

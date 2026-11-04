@@ -16,7 +16,6 @@
 )
 
 (defrule isFrog "amphibian"
-   (not (guessed))
    (vertebrate y)
    (warmBlooded n)
    (amphibian y)  ; frog is the only amphibian

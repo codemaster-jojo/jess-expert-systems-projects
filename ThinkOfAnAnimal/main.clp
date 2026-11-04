@@ -37,7 +37,6 @@
 (defglobal ?*FILTER_SALIENCE* = 100)
 (defglobal ?*START_SALIENCE* = 10000)
 (defglobal ?*UNSURE_SALIENCE* = -1000)
-(defglobal ?*END_SALIENCE* = -10000)
 
 (defglobal ?*MAX_GUESSES* = 20)
 
@@ -73,7 +72,7 @@
 
    (if (>= ?*num_guesses* ?*MAX_GUESSES*) then
       (print "I have asked " ?*MAX_GUESSES* " questions and still do not know the animal. You win!" crlf)
-      (assert (guessed))
+      (halt)
       (bind ?answer u)
    else
       (bind ?*num_guesses* (+ 1 ?*num_guesses*))
@@ -102,8 +101,6 @@
 ** Guesses the animal. This marks the end of the Think of an Animal game, right before the closing remarks
 */
 (deffunction guess (?animal)
-   (assert (guessed))
-
    (print "I am ready to guess! Here is my guess: " ?animal "." crlf)
    (bind ?ans (sym-cat (sub-string 1 1 (lowcase (ask "Am I correct (y/n)? "))))) ; first character, as a token
    (if (eq ?ans y) then
@@ -111,6 +108,7 @@
    else
       (print "Aw, I'll get it next time... You won!" crlf)
    )
+   (halt)
 ) ; deffunction guess (?animal)
 
 
@@ -126,7 +124,6 @@
 */
 
 (defrule need-vertebrate "Asks if animal is a vertebrate"
-   (not (guessed))
    (need-vertebrate ?)
 =>
    (bind ?ans (assertYNU vertebrate "Is the animal a vertebrate? "))
@@ -134,7 +131,6 @@
 )
 
 (defrule need-warmBlooded "Asks if animal is warm blooded"
-   (not (guessed))
    (need-warmBlooded ?)
 =>
    (bind ?ans (assertYNU warmBlooded "Is the animal warm blooded? "))
@@ -142,7 +138,6 @@
 )
 
 (defrule need-mammal "Asks if animal is a mammal"
-   (not (guessed))
    (need-mammal ?)
 =>
    (bind ?ans (assertYNU mammal "Is the animal a mammal? "))
@@ -150,7 +145,6 @@
 )
 
 (defrule need-reptile "Asks if animal is a reptile"
-   (not (guessed))
    (need-reptile ?)
 =>
    (bind ?ans (assertYNU reptile "Is the animal a reptile? "))
@@ -158,7 +152,6 @@
 )
 
 (defrule need-amphibian "Asks if animal is an amphibian"
-   (not (guessed))
    (need-amphibian ?)
 =>
    (bind ?ans (assertYNU amphibian "Is the animal an amphibian? "))
@@ -166,7 +159,6 @@
 )
 
 (defrule need-bird "Asks if animal is a bird"
-   (not (guessed))
    (need-bird ?)
 =>
    (bind ?ans (assertYNU bird "Is the animal a bird? "))
@@ -174,7 +166,6 @@
 )
 
 (defrule need-fish "Asks if animal is a fish"
-   (not (guessed))
    (need-fish ?)
 =>
    (bind ?ans (assertYNU fish "Is the animal a fish? "))
@@ -182,7 +173,6 @@
 )
 
 (defrule need-waterAnimal "Asks if animal lives in water"
-   (not (guessed))
    (need-waterAnimal ?)
 =>
    (bind ?ans (assertYNU waterAnimal "Does the animal live in water? "))
@@ -190,7 +180,6 @@
 )
 
 (defrule need-fly "Asks if animal can fly"
-   (not (guessed))
    (need-fly ?)
 =>
    (bind ?ans (assertYNU fly "Can the animal fly (not glide), even for short distances? "))
@@ -198,7 +187,6 @@
 )
 
 (defrule need-omnivore "Asks if animal is an omnivore"
-   (not (guessed))
    (need-omnivore ?)
 =>
    (bind ?ans (assertYNU omnivore "Is the animal an omnivore? "))
@@ -206,7 +194,6 @@
 )
 
 (defrule need-pets "Asks if animal is a pet"
-   (not (guessed))
    (need-pets ?)
 =>
    (bind ?ans (assertYNU pets "Is the animal commonly kept as a pet? "))
@@ -214,7 +201,6 @@
 )
 
 (defrule need-activeDuringDay "Asks if animal is active during the day"
-   (not (guessed))
    (need-activeDuringDay ?)
 =>
    (bind ?ans (assertYNU activeDuringDay "Is the animal active during the day? "))
@@ -260,7 +246,6 @@
 ** Rules to guess the animal. Uses backward chaining!
 */
 (defrule isMammal "batches the mammal knowledge island"
-   (not (guessed))
    (not (mammals-loaded))
    (vertebrate y)
    (warmBlooded y)
@@ -271,7 +256,6 @@
 )
 
 (defrule isReptile "batches the reptile knowledge island"
-   (not (guessed))
    (not (reptiles-loaded))
    (vertebrate y)
    (warmBlooded n)
@@ -282,7 +266,6 @@
 )
 
 (defrule isAmphibian "batches the amphibian knowledge island"
-   (not (guessed))
    (not (amphibians-loaded))
    (vertebrate y)
    (warmBlooded n)
@@ -293,7 +276,6 @@
 )
 
 (defrule isBird "batches the bird knowledge island"
-   (not (guessed))
    (not (birds-loaded))
    (vertebrate y)
    (warmBlooded y)
@@ -304,7 +286,6 @@
 )
 
 (defrule isFish "batches the fish knowledge island"
-   (not (guessed))
    (not (fish-loaded))
    (vertebrate y)
    (warmBlooded n)
@@ -315,7 +296,6 @@
 )
 
 (defrule isInvertebrate "batches the invertebrate knowledge island"
-   (not (guessed))
    (not (invertebrates-loaded))
    (vertebrate n)
 =>
@@ -329,7 +309,6 @@
 */
 (defrule notSure "at the end, if the user doesn't know."
    (declare (salience ?*UNSURE_SALIENCE*))
-   (not (guessed))
 =>
    (print "I don't know what the animal is. " crlf)
 )
@@ -340,10 +319,4 @@
    (print "Welcome to Think of an Animal. Think of an animal, and I will try to guess it. 
 Answer with a token that starts with y, n, or u (for yes, no, and unknown, respectively).
 I will have " ?*MAX_GUESSES* " questions to guess your animal. " crlf crlf)
-)
-
-(defrule endOfGame "Closing message before the program ends"
-   (declare (salience ?*END_SALIENCE*))
-=>
-   (print crlf "Thank you for playing the Think of an Animal game! See you later!" crlf)
 )

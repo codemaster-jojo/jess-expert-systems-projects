@@ -3,6 +3,10 @@
 ** November 3, 2026
 ** 
 ** Knowledge island for fish. Batched from main.clp once the animal is a fish.
+** ** These facts are always asserted when this file is batched:
+** (vertebrate y)
+** (warmBlooded n)
+** (fish y)
 ** 
 ** Experts (that played the Think of an Animal Game):
 ** Manan Gupta, Tanay Agrawal, Jaden Liu, Aaron Ma.
@@ -14,7 +18,6 @@
 ** Backward chaining need- rules.
 */
 (defrule need-canInflate "Asks if animal can inflate"
-   (not (guessed))
    (need-canInflate ?)
 =>
    (bind ?ans (assertYNU canInflate "Can the animal inflate itself? "))
@@ -36,20 +39,12 @@
 ** the said animal.
 */
 (defrule isPufferfish "fish, can inflate"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (fish y)
    (canInflate y) ; not eel
 =>
    (guess "pufferfish")
 )
 
 (defrule isEel "fish, cannot inflate"
-   (not (guessed))
-   (vertebrate y)
-   (warmBlooded n)
-   (fish y)
    (canInflate n) ; not pufferfish
 =>
    (guess "eel")
