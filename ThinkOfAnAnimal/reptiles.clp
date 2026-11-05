@@ -3,6 +3,9 @@
 ** November 3, 2026
 ** 
 ** Knowledge island for reptiles. Batched from main.clp once the animal is a reptile.
+** (vertebrate y)
+** (warmBlooded n)
+** (reptile y)
 ** 
 ** Experts (that played the Think of an Animal Game):
 ** Manan Gupta, Tanay Agrawal, Jaden Liu, Aaron Ma.
