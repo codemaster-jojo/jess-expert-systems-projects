@@ -1,3 +1,12 @@
+This project uses the Jess rule engine/lisp language (description below) and has three main folders:
+  - JessBasics - learning the Jess language, contains basic tasks like anagrams (for the most part, this can be ignored.)
+  - ThinkOfAnAnimal - Think of an Animal game built using the Jess language with forward-chaining and backward-chaining structure.
+  - FinalProject - Small scale expert system developed in ~1-2 months, designed to help the user choose between different types of active filters (for example, a low-pass, Butterworth, first-order, unity gain filter). The expert system will output a schematic drawn with Java's Graphics2D, as well as calculated resistor/capacitor values.
+
+To run any project, open the corresponding folder in your terminal, and type bin/jess to open the rule engine.
+Then, type (batch [file].clp)(run) -- which will usually be main.clp.
+
+
         -----------------------------------------------------
              Jess, the Rule Engine for the Java Platform
                 (C) 2008 Sandia National Laboratories
